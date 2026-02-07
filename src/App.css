@@ -1,0 +1,63 @@
+/* Container */
+.main-container {
+  max-width: 900px;
+}
+
+.preview-boxes-container {
+  outline: none;
+  cursor: default;
+}
+
+.preview-box {
+  font-size: 1.5rem;
+  line-height: 2.5;
+  cursor: default;
+}
+
+.ruby-line {
+  min-height: 1em;
+}
+
+/* Ruby annotations */
+ruby {
+  margin: 0 2px;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+ruby:hover {
+  background-color: #f0f0f0;
+}
+
+ruby.selected {
+  color: red;
+  font-weight: bold;
+  background-color: #ffe6e6;
+}
+
+rt {
+  font-size: 0.6em;
+  color: #555;
+}
+
+ruby.selected rt {
+  color: red;
+}
+
+/* Fade-in animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
