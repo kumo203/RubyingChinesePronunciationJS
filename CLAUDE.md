@@ -96,7 +96,7 @@ ConversionItem[] = [
 ```
 
 **Constraints**:
-- Maximum 50 items (newest first)
+- Maximum 20 items (newest first)
 - Duplicates skipped if identical to most recent item
 - Managed by `src/services/historyService.ts`
 
@@ -128,13 +128,21 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
 ### History Limit
 Edit `src/services/historyService.ts`:
 ```typescript
-const MAX_HISTORY_ITEMS = 50; // Change as needed
+const MAX_HISTORY_ITEMS = 20; // Change as needed
 ```
 
-### GitHub Pages Deployment Path
-Edit `vite.config.ts:7`:
+### History Text Display Length
+Edit `src/components/HistoryPanel.tsx`:
 ```typescript
-base: '/RubyingChinesePronunciationJS/', // Use your repo name
+const HISTORY_TEXT_LENGTH = 20; // Max chars before truncation with '...'
+```
+
+### Deployment Base Path
+Edit `vite.config.ts`:
+```typescript
+base: './',  // For static file deployment (open index.html directly)
+// OR
+base: '/RubyingChinesePronunciationJS/', // For GitHub Pages deployment
 ```
 
 ### Zhuyin Dictionary
@@ -176,10 +184,38 @@ When modifying core functionality, verify:
 7. Line breaks create separate boxes
 8. Time formatting matches expected output ("Just now", "5m ago", etc.)
 
-## Build Output
+## Deployment
 
+### Static File Deployment (Current Configuration)
+The project is configured for **single-file deployment** using `vite-plugin-singlefile`:
+- Build creates **one HTML file** with all CSS/JS inlined: `dist/index.html` (~500KB)
+- Works when opened directly via `file://` protocol (no web server needed)
+- No CORS issues - everything is embedded in the HTML
+- Base path is `'./'` for relative path resolution
+- Perfect for offline use or sharing as a single file
+
+To deploy:
+```bash
+npm run build
+# dist/index.html can now be double-clicked to open in browser
+```
+
+### GitHub Pages Deployment
+The `/docs` folder contains the latest build for GitHub Pages:
+- After building, copy `dist/index.html` to `docs/index.html`
+- GitHub Pages serves from the `/docs` folder
+- If switching to GitHub Pages-only deployment, change `base: './'` to `base: '/RubyingChinesePronunciationJS/'` in `vite.config.ts`
+
+```bash
+npm run build
+cp dist/index.html docs/index.html
+git add docs/index.html
+git commit -m "Update GitHub Pages deployment"
+```
+
+### Build Output Details
 Production build generates:
-- Minified JS/CSS in `dist/assets/`
-- `dist/index.html` as entry point
-- ~200KB gzipped bundle size
-- All assets use `/RubyingChinesePronunciationJS/` base path for GitHub Pages
+- **Single HTML file**: `dist/index.html` (~500KB, includes all JS/CSS inlined)
+- Favicon: `dist/vite.svg`
+- ~206KB gzipped
+- Uses `vite-plugin-singlefile` to inline all assets

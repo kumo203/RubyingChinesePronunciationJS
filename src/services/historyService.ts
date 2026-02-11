@@ -1,7 +1,7 @@
 import type { ConversionItem } from '../types';
 
 const STORAGE_KEY = 'pinyinRubyHistory';
-const MAX_HISTORY_ITEMS = 50;
+const MAX_HISTORY_ITEMS = 20;
 
 /**
  * Loads history from localStorage

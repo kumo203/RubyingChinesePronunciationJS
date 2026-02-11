@@ -20,7 +20,7 @@ This React version replicates all features from the original Blazor application 
     - `Right` / `>` / `.`: Move to next character
     - `Up`: Jump to previous phrase (after punctuation)
     - `Down`: Jump to next phrase
-- **Persistent History**: Stores up to 50 recent conversions in localStorage
+- **Persistent History**: Stores up to 20 recent conversions in localStorage
 - **Fade-in Animations**: Smooth transitions for result display
 - **Static Deployment**: No backend server required, runs entirely in the browser
 
@@ -126,7 +126,7 @@ src/
 - Phrase jumping based on punctuation: 。！？,.!?\n\r，、；;：:
 
 ### History Management
-- Max 50 items, newest first
+- Max 20 items, newest first
 - Skips duplicates (compares with most recent only)
 - Auto-increments IDs
 - Persists to localStorage as JSON
@@ -163,7 +163,7 @@ export function usePinyinConversion(defaultText: string = '你的文字') {
 ### Adjust History Limit
 Edit `historyService.ts`:
 ```typescript
-const MAX_HISTORY_ITEMS = 100; // Change from 50
+const MAX_HISTORY_ITEMS = 20;
 ```
 
 ### Change Deployment Path
@@ -182,7 +182,7 @@ base: '/your-custom-path/',
 - [x] Phrase jumping: ArrowUp/Down
 - [x] History saves to localStorage
 - [x] History deduplicates consecutive identical items
-- [x] History limits to 50 items
+- [x] History limits to 20 items
 - [x] Time formatting matches C# output
 - [x] Line breaks create separate boxes
 - [x] Fade-in animation appears on results
