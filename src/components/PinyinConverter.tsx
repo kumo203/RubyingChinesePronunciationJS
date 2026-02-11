@@ -33,10 +33,10 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
           rows={6}
           placeholder="Enter Chinese characters here (e.g., 你好世界)..."
         />
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-center mt-4">
           <button
             onClick={onConvert}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-3xl py-5 px-16 rounded-lg transition-colors"
           >
             Convert
           </button>

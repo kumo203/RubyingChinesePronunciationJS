@@ -56,9 +56,9 @@ export default function HistoryPanel({ history, onLoad, onRemove, onClearAll }: 
                 </div>
               ))}
             </div>
-            <div className="p-4 border-t border-gray-200">
+            <div className="p-4 border-t border-gray-200 flex justify-center">
               <button
-                className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-2 px-4 rounded-md transition-colors"
+                className="bg-red-600 hover:bg-red-700 text-white font-bold text-3xl py-5 px-16 rounded-lg transition-colors"
                 onClick={onClearAll}
               >
                 Clear All
