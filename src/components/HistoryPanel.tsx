@@ -1,11 +1,21 @@
 import type { ConversionItem } from '../types';
 import { formatTime } from '../utils/dateFormatter';
 
+const HISTORY_TEXT_LENGTH = 20;
+
 interface Props {
   history: ConversionItem[];
   onLoad: (text: string) => void;
   onRemove: (id: number) => void;
   onClearAll: () => void;
+}
+
+/**
+ * Truncates text to specified length and adds "..." if needed
+ */
+function truncateText(text: string, maxLength: number = HISTORY_TEXT_LENGTH): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 }
 
 /**
@@ -30,8 +40,8 @@ export default function HistoryPanel({ history, onLoad, onRemove, onClearAll }: 
                     className="flex-grow text-left hover:text-blue-600 transition-colors"
                     onClick={() => onLoad(item.inputText)}
                   >
-                    <div className="font-semibold truncate" title={item.inputText}>
-                      {item.inputText}
+                    <div className="font-semibold" title={item.inputText}>
+                      {truncateText(item.inputText)}
                     </div>
                     <small className="text-gray-500">{formatTime(item.timestamp)}</small>
                   </button>

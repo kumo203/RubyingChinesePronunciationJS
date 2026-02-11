@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { viteSingleFile } from 'vite-plugin-singlefile'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  base: '/RubyingChinesePronunciationJS/', // Replace with your GitHub repo name
+  plugins: [react(), viteSingleFile()],
+  base: './', // Use relative paths for static deployment (open index.html directly)
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
