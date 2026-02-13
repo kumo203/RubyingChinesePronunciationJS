@@ -206,12 +206,16 @@ The `/docs` folder contains the latest build for GitHub Pages:
 - GitHub Pages serves from the `/docs` folder
 - If switching to GitHub Pages-only deployment, change `base: './'` to `base: '/RubyingChinesePronunciationJS/'` in `vite.config.ts`
 
+**IMPORTANT: `docs/index.html` must always be updated when committing code changes.**
+Always run the following before committing:
+
 ```bash
 npm run build
 cp dist/index.html docs/index.html
 git add docs/index.html
-git commit -m "Update GitHub Pages deployment"
 ```
+
+Include the `docs/index.html` update in the same commit as the code changes.
 
 ### Build Output Details
 Production build generates:
