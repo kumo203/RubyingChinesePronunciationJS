@@ -13,7 +13,7 @@ interface Props {
  * Replicates conversion functionality from C# Home.razor
  */
 export default function PinyinConverter({ conversion, onConvert }: Props) {
-  const { inputText, setInputText, rubyTokens, rubyMode, setRubyMode, selectedIndex, setSelectedIndex } = conversion;
+  const { inputText, setInputText, rubyTokens, rubyMode, setRubyMode, toneDisplay, setToneDisplay, selectedIndex, setSelectedIndex } = conversion;
 
   // Enable keyboard navigation
   useKeyboardNavigation(rubyTokens, selectedIndex, setSelectedIndex);
@@ -33,6 +33,14 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
           rows={6}
           placeholder="Enter Chinese characters here (e.g., 你好世界)..."
         />
+        <div className="mt-4">
+          <ModeToggle
+            mode={rubyMode}
+            onChange={setRubyMode}
+            toneDisplay={toneDisplay}
+            onToneDisplayChange={setToneDisplay}
+          />
+        </div>
         <div className="flex justify-center mt-4">
           <button
             onClick={onConvert}
@@ -46,14 +54,14 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
       {/* Output Section */}
       {rubyTokens && (
         <div className="bg-white rounded-lg shadow-md overflow-hidden fade-in">
-          <div className="bg-green-600 text-white px-6 py-4 flex justify-between items-center">
+          <div className="bg-green-600 text-white px-6 py-4">
             <h3 className="text-xl font-semibold">Result</h3>
-            <ModeToggle mode={rubyMode} onChange={setRubyMode} />
           </div>
-          <div className="p-6">
+          <div className="px-6 pb-6">
             <RubyDisplay
               tokens={rubyTokens}
               mode={rubyMode}
+              toneDisplay={toneDisplay}
               selectedIndex={selectedIndex}
               onSelectToken={setSelectedIndex}
             />

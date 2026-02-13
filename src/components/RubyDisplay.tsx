@@ -1,9 +1,11 @@
 import React from 'react';
-import type { RubyToken, LineInfo, LineToken } from '../types';
+import type { RubyToken, LineInfo, LineToken, ToneDisplay } from '../types';
+import { pinyinToToneNumber, applyToneToZhuyin } from '../services/pinyinService';
 
 interface Props {
   tokens: RubyToken[];
   mode: 'pinyin' | 'zhuyin';
+  toneDisplay: ToneDisplay;
   selectedIndex: number;
   onSelectToken: (index: number) => void;
 }
@@ -55,7 +57,7 @@ function getTokenLines(tokens: RubyToken[]): LineInfo[] {
  * Displays ruby annotations with line break handling
  * Replicates ruby display from C# Home.razor
  */
-export default function RubyDisplay({ tokens, mode, selectedIndex, onSelectToken }: Props) {
+export default function RubyDisplay({ tokens, mode, toneDisplay, selectedIndex, onSelectToken }: Props) {
   const lines = getTokenLines(tokens);
 
   return (
@@ -70,7 +72,16 @@ export default function RubyDisplay({ tokens, mode, selectedIndex, onSelectToken
                 const isSelected = index === selectedIndex;
 
                 if (token.isRuby) {
-                  const rubyText = mode === 'zhuyin' ? token.zhuyin : token.pinyin;
+                  let rubyText: string;
+                  if (mode === 'zhuyin') {
+                    rubyText = toneDisplay === 'mark'
+                      ? applyToneToZhuyin(token.zhuyin, token.pinyin, 'mark')
+                      : applyToneToZhuyin(token.zhuyin, token.pinyin, 'number');
+                  } else {
+                    rubyText = toneDisplay === 'number'
+                      ? pinyinToToneNumber(token.pinyin)
+                      : token.pinyin;
+                  }
 
                   return (
                     <ruby

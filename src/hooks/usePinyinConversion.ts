@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { RubyToken, RubyMode } from '../types';
+import type { RubyToken, RubyMode, ToneDisplay } from '../types';
 import { getPinyin } from '../services/pinyinService';
 
 /**
@@ -10,6 +10,7 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
   const [inputText, setInputText] = useState(defaultText);
   const [rubyTokens, setRubyTokens] = useState<RubyToken[] | null>(null);
   const [rubyMode, setRubyMode] = useState<RubyMode>('pinyin');
+  const [toneDisplay, setToneDisplay] = useState<ToneDisplay>('mark');
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const convert = () => {
@@ -28,6 +29,8 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
     rubyTokens,
     rubyMode,
     setRubyMode,
+    toneDisplay,
+    setToneDisplay,
     selectedIndex,
     setSelectedIndex,
     convert
