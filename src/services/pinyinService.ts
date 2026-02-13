@@ -1,5 +1,5 @@
 import { pinyin } from 'pinyin-pro';
-import type { RubyToken } from '../types';
+import type { RubyToken, PinyinVariant } from '../types';
 import { PINYIN_TO_ZHUYIN_MAP } from '../data/zhuyinMap';
 
 // Tone mark removal mapping (from PinyinService.cs lines 161-177)
@@ -125,6 +125,22 @@ export function isChinese(text: string): boolean {
 }
 
 /**
+ * Returns all pronunciation variants for a single Chinese character.
+ * Deduplicates results from pinyin-pro's multiple: true option.
+ */
+function getAllVariants(char: string): PinyinVariant[] {
+  const all: string[] = pinyin(char, {
+    toneType: 'symbol',
+    type: 'array',
+    multiple: true
+  });
+  const seen = new Set<string>();
+  return all
+    .filter(p => { if (seen.has(p)) return false; seen.add(p); return true; })
+    .map(p => ({ pinyin: p, zhuyin: convertPinyinToZhuyin(p) }));
+}
+
+/**
  * Main conversion function: converts Chinese text to RubyToken array
  * This replicates the behavior of C# PinyinService.GetPinyin()
  */
@@ -139,18 +155,16 @@ export function getPinyin(text: string): RubyToken[] {
     const isChinese = isChineseCharacter(char);
 
     if (isChinese) {
-      // Get pinyin with tone marks using pinyin-pro
-      // toneType: 'symbol' is equivalent to PinyinFormat.WithToneMark
-      const pinyinText = pinyin(char, {
-        toneType: 'symbol',
-        type: 'array'
-      })[0] || '';
+      const variants = getAllVariants(char);
+      const primary = variants[0] ?? { pinyin: '', zhuyin: '' };
 
       tokens.push({
         text: char,
-        pinyin: pinyinText,
-        zhuyin: convertPinyinToZhuyin(pinyinText),
-        isRuby: true
+        pinyin: primary.pinyin,
+        zhuyin: primary.zhuyin,
+        isRuby: true,
+        variants,
+        activeVariantIndex: 0
       });
     } else {
       // Group consecutive non-Chinese characters
@@ -164,7 +178,9 @@ export function getPinyin(text: string): RubyToken[] {
         text: nonChineseText,
         pinyin: '',
         zhuyin: '',
-        isRuby: false
+        isRuby: false,
+        variants: [{ pinyin: '', zhuyin: '' }],
+        activeVariantIndex: 0
       });
     }
   }

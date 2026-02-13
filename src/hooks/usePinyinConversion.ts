@@ -24,6 +24,17 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
     return null;
   };
 
+  const selectPronunciationVariant = (tokenIndex: number, variantIndex: number) => {
+    if (!rubyTokens) return;
+    const updated = rubyTokens.map((token, i) => {
+      if (i !== tokenIndex) return token;
+      const v = token.variants[variantIndex];
+      if (!v) return token;
+      return { ...token, pinyin: v.pinyin, zhuyin: v.zhuyin, activeVariantIndex: variantIndex };
+    });
+    setRubyTokens(updated);
+  };
+
   return {
     inputText,
     setInputText,
@@ -34,6 +45,7 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
     setToneDisplay,
     selectedIndex,
     setSelectedIndex,
-    convert
+    convert,
+    selectPronunciationVariant
   };
 }

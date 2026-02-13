@@ -1,6 +1,7 @@
 import React from 'react';
 import type { RubyToken, LineInfo, LineToken, ToneDisplay } from '../types';
 import { pinyinToToneNumber, applyToneToZhuyin } from '../services/pinyinService';
+import PinyinPicker from './PinyinPicker';
 
 interface Props {
   tokens: RubyToken[];
@@ -8,6 +9,10 @@ interface Props {
   toneDisplay: ToneDisplay;
   selectedIndex: number;
   onSelectToken: (index: number) => void;
+  openPickerIndex: number;
+  onOpenPicker: (index: number) => void;
+  onClosePicker: () => void;
+  onSelectVariant: (tokenIndex: number, variantIndex: number) => void;
 }
 
 /**
@@ -57,7 +62,10 @@ function getTokenLines(tokens: RubyToken[]): LineInfo[] {
  * Displays ruby annotations with line break handling
  * Replicates ruby display from C# Home.razor
  */
-export default function RubyDisplay({ tokens, mode, toneDisplay, selectedIndex, onSelectToken }: Props) {
+export default function RubyDisplay({
+  tokens, mode, toneDisplay, selectedIndex, onSelectToken,
+  openPickerIndex, onOpenPicker, onClosePicker, onSelectVariant
+}: Props) {
   const lines = getTokenLines(tokens);
 
   return (
@@ -83,15 +91,42 @@ export default function RubyDisplay({ tokens, mode, toneDisplay, selectedIndex, 
                       : token.pinyin;
                   }
 
+                  const isPolyphonic = token.variants.length > 1;
+                  const isPickerOpen = index === openPickerIndex;
+
+                  const rubyClasses = [
+                    'ruby-text',
+                    isSelected ? 'selected' : '',
+                    isPolyphonic ? 'polyphonic' : ''
+                  ].filter(Boolean).join(' ');
+
                   return (
-                    <ruby
-                      key={index}
-                      className={isSelected ? 'ruby-text selected' : 'ruby-text'}
-                      onClick={() => onSelectToken(index)}
-                    >
-                      {token.text}
-                      <rt>{rubyText}</rt>
-                    </ruby>
+                    <span key={index} style={{ position: 'relative', display: 'inline' }}>
+                      <ruby
+                        className={rubyClasses}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectToken(index);
+                          if (isPolyphonic) {
+                            isPickerOpen ? onClosePicker() : onOpenPicker(index);
+                          }
+                        }}
+                      >
+                        {token.text}
+                        <rt>{rubyText}</rt>
+                      </ruby>
+                      {isPolyphonic && isPickerOpen && (
+                        <PinyinPicker
+                          tokenIndex={index}
+                          variants={token.variants}
+                          activeVariantIndex={token.activeVariantIndex}
+                          mode={mode}
+                          toneDisplay={toneDisplay}
+                          onSelect={onSelectVariant}
+                          onClose={onClosePicker}
+                        />
+                      )}
+                    </span>
                   );
                 } else {
                   return (

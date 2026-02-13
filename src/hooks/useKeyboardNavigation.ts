@@ -33,11 +33,13 @@ function isPhraseStart(tokens: RubyToken[], index: number): boolean {
 export function useKeyboardNavigation(
   rubyTokens: RubyToken[] | null,
   selectedIndex: number,
-  setSelectedIndex: (index: number) => void
+  setSelectedIndex: (index: number) => void,
+  openPickerIndex: number = -1
 ) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!rubyTokens || rubyTokens.length === 0) return;
+      if (openPickerIndex !== -1) return; // suppress navigation when picker is open
 
       let handled = false;
 
@@ -109,5 +111,5 @@ export function useKeyboardNavigation(
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [rubyTokens, selectedIndex, setSelectedIndex]);
+  }, [rubyTokens, selectedIndex, setSelectedIndex, openPickerIndex]);
 }

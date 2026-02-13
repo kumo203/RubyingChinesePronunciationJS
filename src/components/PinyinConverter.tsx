@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import { usePinyinConversion } from '../hooks/usePinyinConversion';
 import RubyDisplay from './RubyDisplay';
@@ -13,10 +14,21 @@ interface Props {
  * Replicates conversion functionality from C# Home.razor
  */
 export default function PinyinConverter({ conversion, onConvert }: Props) {
-  const { inputText, setInputText, rubyTokens, rubyMode, setRubyMode, toneDisplay, setToneDisplay, selectedIndex, setSelectedIndex } = conversion;
+  const {
+    inputText, setInputText, rubyTokens, rubyMode, setRubyMode,
+    toneDisplay, setToneDisplay, selectedIndex, setSelectedIndex,
+    selectPronunciationVariant
+  } = conversion;
 
-  // Enable keyboard navigation
-  useKeyboardNavigation(rubyTokens, selectedIndex, setSelectedIndex);
+  const [openPickerIndex, setOpenPickerIndex] = useState(-1);
+
+  // Enable keyboard navigation — suppressed when picker is open
+  useKeyboardNavigation(rubyTokens, selectedIndex, setSelectedIndex, openPickerIndex);
+
+  const handleConvert = () => {
+    setOpenPickerIndex(-1);
+    onConvert();
+  };
 
   return (
     <div className="space-y-6">
@@ -43,7 +55,7 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
         </div>
         <div className="flex justify-center mt-4">
           <button
-            onClick={onConvert}
+            onClick={handleConvert}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-3xl py-5 px-16 rounded-lg transition-colors"
           >
             Convert
@@ -64,6 +76,10 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
               toneDisplay={toneDisplay}
               selectedIndex={selectedIndex}
               onSelectToken={setSelectedIndex}
+              openPickerIndex={openPickerIndex}
+              onOpenPicker={setOpenPickerIndex}
+              onClosePicker={() => setOpenPickerIndex(-1)}
+              onSelectVariant={selectPronunciationVariant}
             />
           </div>
         </div>
