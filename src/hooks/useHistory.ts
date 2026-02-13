@@ -8,14 +8,17 @@ import * as historyService from '../services/historyService';
  */
 export function useHistory() {
   const [history, setHistory] = useState<ConversionItem[]>([]);
+  const [duplicateId, setDuplicateId] = useState<number | null>(null);
 
   // Load history from localStorage on mount
   useEffect(() => {
     setHistory(historyService.loadHistory());
   }, []);
 
-  const addItem = (text: string) => {
-    setHistory(prev => historyService.addToHistory(prev, text));
+  const addItem = async (text: string) => {
+    const result = await historyService.addToHistory(history, text);
+    setHistory(result.history);
+    setDuplicateId(result.duplicateId);
   };
 
   const removeItem = (id: number) => {
@@ -30,5 +33,5 @@ export function useHistory() {
     }
   };
 
-  return { history, addItem, removeItem, clearAll };
+  return { history, addItem, removeItem, clearAll, duplicateId };
 }

@@ -5,6 +5,7 @@ const HISTORY_TEXT_LENGTH = 20;
 
 interface Props {
   history: ConversionItem[];
+  duplicateId: number | null;
   onLoad: (text: string) => void;
   onRemove: (id: number) => void;
   onClearAll: () => void;
@@ -22,12 +23,17 @@ function truncateText(text: string, maxLength: number = HISTORY_TEXT_LENGTH): st
  * History panel component displaying recent conversions
  * Replicates history section from C# Home.razor
  */
-export default function HistoryPanel({ history, onLoad, onRemove, onClearAll }: Props) {
+export default function HistoryPanel({ history, duplicateId, onLoad, onRemove, onClearAll }: Props) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden mt-6">
       <div className="bg-blue-500 text-white px-6 py-4">
         <h5 className="text-xl font-semibold">History</h5>
       </div>
+      {duplicateId !== null && (
+        <div className="px-6 py-2 text-sm border-b" style={{ backgroundColor: '#fefce8', borderColor: '#fef08a', color: '#854d0e' }}>
+          Already in history as <span className="font-bold">#{duplicateId}</span>
+        </div>
+      )}
 
       <div className="p-0">
         {history.length > 0 ? (
@@ -41,6 +47,7 @@ export default function HistoryPanel({ history, onLoad, onRemove, onClearAll }: 
                     onClick={() => onLoad(item.inputText)}
                   >
                     <div className="font-semibold" title={item.inputText}>
+                      <span style={{ color: '#9ca3af', fontWeight: 'normal', fontSize: '0.875rem', marginRight: '0.75rem' }}>#{item.id}</span>
                       {truncateText(item.inputText)}
                     </div>
                     <small className="text-gray-500">{formatTime(item.timestamp)}</small>

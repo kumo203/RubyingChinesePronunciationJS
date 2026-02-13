@@ -13,9 +13,10 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
   const [toneDisplay, setToneDisplay] = useState<ToneDisplay>('mark');
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const convert = () => {
-    if (inputText.trim()) {
-      const tokens = getPinyin(inputText);
+  const convert = (text?: string) => {
+    const source = (text ?? inputText).trim();
+    if (source) {
+      const tokens = getPinyin(source);
       setRubyTokens(tokens);
       setSelectedIndex(-1); // Reset selection on new conversion
       return tokens;
