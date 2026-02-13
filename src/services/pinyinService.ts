@@ -20,6 +20,64 @@ const TONE_MARK_MAP: Record<string, string> = {
   'ń': 'n', 'ň': 'n', 'ǹ': 'n',
 };
 
+// Maps toned vowels to their tone number (1-4); unmarked = tone 5 (neutral)
+const TONE_NUMBER_MAP: Record<string, [string, number]> = {
+  'ā': ['a', 1], 'á': ['a', 2], 'ǎ': ['a', 3], 'à': ['a', 4],
+  'ē': ['e', 1], 'é': ['e', 2], 'ě': ['e', 3], 'è': ['e', 4],
+  'ī': ['i', 1], 'í': ['i', 2], 'ǐ': ['i', 3], 'ì': ['i', 4],
+  'ō': ['o', 1], 'ó': ['o', 2], 'ǒ': ['o', 3], 'ò': ['o', 4],
+  'ū': ['u', 1], 'ú': ['u', 2], 'ǔ': ['u', 3], 'ù': ['u', 4],
+  'ǖ': ['ü', 1], 'ǘ': ['ü', 2], 'ǚ': ['ü', 3], 'ǜ': ['ü', 4],
+  'ń': ['n', 2], 'ň': ['n', 3], 'ǹ': ['n', 4],
+};
+
+/**
+ * Converts pinyin with tone marks to pinyin with tone number suffix
+ * Example: nǐ → ni3, hǎo → hao3, māo → mao1, ma → ma5
+ */
+export function pinyinToToneNumber(pinyinText: string): string {
+  if (!pinyinText) return pinyinText;
+  let tone = 5; // neutral tone default
+  const base = pinyinText
+    .split('')
+    .map(char => {
+      if (char in TONE_NUMBER_MAP) {
+        const [replacement, t] = TONE_NUMBER_MAP[char];
+        tone = t;
+        return replacement;
+      }
+      return char;
+    })
+    .join('');
+  return base + tone;
+}
+
+// Zhuyin tone mark suffixes: tone 1 has no mark, 2-4 have diacritics, 5 (neutral) = ˙
+const ZHUYIN_TONE_MARKS = ['', '', 'ˊ', 'ˇ', 'ˋ', '˙'] as const;
+
+/**
+ * Extracts the tone number (1-5) from a pinyin string with tone marks.
+ * Returns 5 for neutral/unmarked syllables.
+ */
+export function getToneFromPinyin(pinyinText: string): number {
+  for (const char of pinyinText) {
+    if (char in TONE_NUMBER_MAP) return TONE_NUMBER_MAP[char][1];
+  }
+  return 5;
+}
+
+/**
+ * Applies tone display to a zhuyin string based on the pinyin tone.
+ * 'mark': appends standard Zhuyin tone diacritic (tone 1 = no mark)
+ * 'number': appends tone number 1-5
+ */
+export function applyToneToZhuyin(zhuyinText: string, pinyinText: string, toneDisplay: 'mark' | 'number'): string {
+  if (!zhuyinText) return zhuyinText;
+  const tone = getToneFromPinyin(pinyinText);
+  if (toneDisplay === 'number') return zhuyinText + tone;
+  return zhuyinText + ZHUYIN_TONE_MARKS[tone];
+}
+
 /**
  * Removes tone marks from pinyin text
  * Example: nǐ → ni, hǎo → hao

@@ -25,3 +25,4 @@ export interface LineInfo {
 }
 
 export type RubyMode = 'pinyin' | 'zhuyin';
+export type ToneDisplay = 'mark' | 'number';
