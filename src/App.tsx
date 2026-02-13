@@ -12,19 +12,16 @@ function App() {
   const conversion = usePinyinConversion();
   const history = useHistory();
 
-  const handleConvert = () => {
+  const handleConvert = async () => {
     const tokens = conversion.convert();
     if (tokens) {
-      history.addItem(conversion.inputText);
+      await history.addItem(conversion.inputText);
     }
   };
 
   const handleLoadFromHistory = (text: string) => {
     conversion.setInputText(text);
-    // Auto-convert when loading from history
-    setTimeout(() => {
-      conversion.convert();
-    }, 0);
+    conversion.convert(text);
   };
 
   return (
@@ -44,6 +41,7 @@ function App() {
 
         <HistoryPanel
           history={history.history}
+          duplicateId={history.duplicateId}
           onLoad={handleLoadFromHistory}
           onRemove={history.removeItem}
           onClearAll={history.clearAll}

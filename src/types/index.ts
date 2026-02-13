@@ -11,6 +11,7 @@ export interface ConversionItem {
   id: number;
   inputText: string;
   timestamp: Date;
+  hash: string; // SHA-256 hex of inputText (trimmed) for deduplication
 }
 
 // For rendering line breaks
