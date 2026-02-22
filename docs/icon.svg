@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Red background -->
+  <rect width="512" height="512" fill="#C41E3A"/>
+  <!-- Small annotation pill (represents pinyin/zhuyin ruby text) -->
+  <rect x="166" y="104" width="180" height="40" rx="10" fill="white" opacity="0.9"/>
+  <!-- Main character block (represents the base Chinese character) -->
+  <rect x="90" y="174" width="332" height="246" rx="20" fill="white"/>
+  <!-- Stylised strokes inside the block suggesting a Chinese character -->
+  <rect x="130" y="270" width="252" height="16" rx="8" fill="#C41E3A"/>
+  <rect x="248" y="200" width="16" height="196" rx="8" fill="#C41E3A"/>
+</svg>

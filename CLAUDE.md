@@ -206,20 +206,34 @@ The `/docs` folder contains the latest build for GitHub Pages:
 - GitHub Pages serves from the `/docs` folder
 - If switching to GitHub Pages-only deployment, change `base: './'` to `base: '/RubyingChinesePronunciationJS/'` in `vite.config.ts`
 
-**IMPORTANT: `docs/index.html` must always be updated when committing code changes.**
+**IMPORTANT: `docs/` must always be updated when committing code changes.**
 Always run the following before committing:
 
 ```bash
 npm run build
 cp dist/index.html docs/index.html
-git add docs/index.html
+cp dist/manifest.json docs/manifest.json
+cp dist/sw.js docs/sw.js
+cp dist/icon-192.png docs/icon-192.png
+cp dist/icon-512.png docs/icon-512.png
+cp dist/icon.svg docs/icon.svg
+git add docs/
 ```
 
-Include the `docs/index.html` update in the same commit as the code changes.
+Include the `docs/` update in the same commit as the code changes.
+
+### PWA Support
+The app has PWA (Progressive Web App) support for the GitHub Pages deployment:
+- `public/manifest.json` — web app manifest (name, icons, display mode)
+- `public/sw.js` — cache-first service worker (enables offline use after first visit)
+- `public/icon-192.png` / `public/icon-512.png` — app icons
+- `public/icon.svg` — SVG source for icons (regenerate PNGs via `node scripts/generate-icons.js`)
+- PWA install prompt appears on GitHub Pages (HTTPS) only — **not** when opening via `file://`
 
 ### Build Output Details
 Production build generates:
 - **Single HTML file**: `dist/index.html` (~500KB, includes all JS/CSS inlined)
+- PWA files: `dist/manifest.json`, `dist/sw.js`, `dist/icon-192.png`, `dist/icon-512.png`, `dist/icon.svg`
 - Favicon: `dist/vite.svg`
-- ~206KB gzipped
-- Uses `vite-plugin-singlefile` to inline all assets
+- ~208KB gzipped
+- Uses `vite-plugin-singlefile` to inline all JS/CSS assets
