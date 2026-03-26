@@ -40,6 +40,7 @@ export function useKeyboardNavigation(
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!rubyTokens || rubyTokens.length === 0) return;
       if (openPickerIndex !== -1) return; // suppress navigation when picker is open
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
 
       let handled = false;
 
