@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rubyapp-v1';
+const CACHE_NAME = 'rubyapp-v1.01';
 
 const PRECACHE_ASSETS = [
   './',
