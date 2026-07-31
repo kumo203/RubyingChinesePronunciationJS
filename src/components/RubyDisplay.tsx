@@ -7,6 +7,7 @@ interface Props {
   tokens: RubyToken[];
   mode: 'pinyin' | 'zhuyin';
   toneDisplay: ToneDisplay;
+  showRuby: boolean;
   selectedIndex: number;
   onSelectToken: (index: number) => void;
   openPickerIndex: number;
@@ -63,7 +64,7 @@ function getTokenLines(tokens: RubyToken[]): LineInfo[] {
  * Replicates ruby display from C# Home.razor
  */
 export default function RubyDisplay({
-  tokens, mode, toneDisplay, selectedIndex, onSelectToken,
+  tokens, mode, toneDisplay, showRuby, selectedIndex, onSelectToken,
   openPickerIndex, onOpenPicker, onClosePicker, onSelectVariant
 }: Props) {
   const lines = getTokenLines(tokens);
@@ -73,7 +74,7 @@ export default function RubyDisplay({
       {lines.map((lineInfo, lineIdx) => (
         <React.Fragment key={lineIdx}>
           {lineInfo.hasLineBreakBefore && <br />}
-          <div className="preview-box p-4 border border-gray-200 rounded-md bg-gray-50">
+          <div className={`preview-box p-4 border border-gray-200 rounded-md bg-gray-50${showRuby ? '' : ' ruby-hidden'}`}>
             <div className="ruby-line">
               {lineInfo.tokens.map((item) => {
                 const { index, token } = item;
@@ -113,7 +114,7 @@ export default function RubyDisplay({
                         }}
                       >
                         {token.text}
-                        <rt>{rubyText}</rt>
+                        {showRuby && <rt>{rubyText}</rt>}
                       </ruby>
                       {isPolyphonic && isPickerOpen && (
                         <PinyinPicker

@@ -17,6 +17,7 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
   const {
     inputText, setInputText, rubyTokens, rubyMode, setRubyMode,
     toneDisplay, setToneDisplay, selectedIndex, setSelectedIndex,
+    showRuby, setShowRuby,
     selectPronunciationVariant
   } = conversion;
 
@@ -51,6 +52,8 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
             onChange={setRubyMode}
             toneDisplay={toneDisplay}
             onToneDisplayChange={setToneDisplay}
+            showRuby={showRuby}
+            onShowRubyChange={setShowRuby}
           />
         </div>
         <div className="flex justify-center mt-4">
@@ -80,6 +83,7 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
               onOpenPicker={setOpenPickerIndex}
               onClosePicker={() => setOpenPickerIndex(-1)}
               onSelectVariant={selectPronunciationVariant}
+              showRuby={showRuby}
             />
           </div>
         </div>
