@@ -12,6 +12,7 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
   const [rubyMode, setRubyMode] = useState<RubyMode>('pinyin');
   const [toneDisplay, setToneDisplay] = useState<ToneDisplay>('mark');
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showRuby, setShowRuby] = useState<boolean>(true);
 
   const convert = (text?: string) => {
     const source = (text ?? inputText).trim();
@@ -45,6 +46,8 @@ export function usePinyinConversion(defaultText: string = '你好，世界！') 
     setToneDisplay,
     selectedIndex,
     setSelectedIndex,
+    showRuby,
+    setShowRuby,
     convert,
     selectPronunciationVariant
   };
