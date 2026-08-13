@@ -29,7 +29,7 @@ function isPhraseStart(tokens: RubyToken[], index: number): boolean {
  * - Ctrl+ArrowLeft / , / < : Move to previous Chinese character
  * - Ctrl+ArrowDown: Jump to next phrase start
  * - Ctrl+ArrowUp: Jump to previous phrase start
- * - Ctrl+Shift+S: Toggle ruby visibility
+ * - \ : Toggle ruby visibility
  */
 export function useKeyboardNavigation(
   rubyTokens: RubyToken[] | null,
@@ -42,8 +42,8 @@ export function useKeyboardNavigation(
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
 
-      // Ctrl+Shift+S - Toggle ruby visibility
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
+      // \ - Toggle ruby visibility
+      if (e.key === '\\') {
         if (onToggleShowRuby) {
           onToggleShowRuby();
           e.preventDefault();

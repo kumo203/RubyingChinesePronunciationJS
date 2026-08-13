@@ -13,7 +13,8 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      if ('serviceWorker' in navigator) {
+      const isLocalDevHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      if ('serviceWorker' in navigator && !isLocalDevHost) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js');
         });
