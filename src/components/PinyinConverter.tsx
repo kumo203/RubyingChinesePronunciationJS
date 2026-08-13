@@ -24,7 +24,7 @@ export default function PinyinConverter({ conversion, onConvert }: Props) {
   const [openPickerIndex, setOpenPickerIndex] = useState(-1);
 
   // Enable keyboard navigation — suppressed when picker is open
-  useKeyboardNavigation(rubyTokens, selectedIndex, setSelectedIndex, openPickerIndex);
+  useKeyboardNavigation(rubyTokens, selectedIndex, setSelectedIndex, openPickerIndex, () => setShowRuby((prev) => !prev));
 
   const handleConvert = () => {
     setOpenPickerIndex(-1);

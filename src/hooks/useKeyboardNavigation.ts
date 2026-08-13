@@ -25,42 +25,54 @@ function isPhraseStart(tokens: RubyToken[], index: number): boolean {
  * Replicates HandleKeyDown, MoveSelection, and MoveToPhrase from C# Home.razor (lines 247-330)
  *
  * Keyboard shortcuts:
- * - ArrowRight / . / > : Move to next Chinese character
- * - ArrowLeft / , / < : Move to previous Chinese character
- * - ArrowDown: Jump to next phrase start
- * - ArrowUp: Jump to previous phrase start
+ * - Ctrl+ArrowRight / . / > : Move to next Chinese character
+ * - Ctrl+ArrowLeft / , / < : Move to previous Chinese character
+ * - Ctrl+ArrowDown: Jump to next phrase start
+ * - Ctrl+ArrowUp: Jump to previous phrase start
+ * - Ctrl+H: Toggle ruby visibility
  */
 export function useKeyboardNavigation(
   rubyTokens: RubyToken[] | null,
   selectedIndex: number,
   setSelectedIndex: (index: number) => void,
-  openPickerIndex: number = -1
+  openPickerIndex: number = -1,
+  onToggleShowRuby?: () => void
 ) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
+
+      // Ctrl+H - Toggle ruby visibility
+      if (e.ctrlKey && e.key.toLowerCase() === 'h') {
+        if (onToggleShowRuby) {
+          onToggleShowRuby();
+          e.preventDefault();
+        }
+        return;
+      }
+
       if (!rubyTokens || rubyTokens.length === 0) return;
       if (openPickerIndex !== -1) return; // suppress navigation when picker is open
-      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
 
       let handled = false;
 
-      // Arrow Right, ., > - Move to next character (lines 251-254)
-      if (e.key === 'ArrowRight' || e.key === '.' || e.key === '>') {
+      // Ctrl+Arrow Right, ., > - Move to next character (lines 251-254)
+      if ((e.key === 'ArrowRight' && e.ctrlKey) || e.key === '.' || e.key === '>') {
         moveSelection(1);
         handled = true;
       }
-      // Arrow Left, ,, < - Move to previous character (lines 255-258)
-      else if (e.key === 'ArrowLeft' || e.key === ',' || e.key === '<') {
+      // Ctrl+Arrow Left, ,, < - Move to previous character (lines 255-258)
+      else if ((e.key === 'ArrowLeft' && e.ctrlKey) || e.key === ',' || e.key === '<') {
         moveSelection(-1);
         handled = true;
       }
-      // Arrow Down - Move to next phrase (lines 259-262)
-      else if (e.key === 'ArrowDown') {
+      // Ctrl+Arrow Down - Move to next phrase (lines 259-262)
+      else if (e.key === 'ArrowDown' && e.ctrlKey) {
         moveToPhrase(1);
         handled = true;
       }
-      // Arrow Up - Move to previous phrase (lines 263-266)
-      else if (e.key === 'ArrowUp') {
+      // Ctrl+Arrow Up - Move to previous phrase (lines 263-266)
+      else if (e.key === 'ArrowUp' && e.ctrlKey) {
         moveToPhrase(-1);
         handled = true;
       }
@@ -112,5 +124,5 @@ export function useKeyboardNavigation(
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [rubyTokens, selectedIndex, setSelectedIndex, openPickerIndex]);
+  }, [rubyTokens, selectedIndex, setSelectedIndex, openPickerIndex, onToggleShowRuby]);
 }
