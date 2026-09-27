@@ -1,13 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/postcss'
 import { viteSingleFile } from 'vite-plugin-singlefile'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
-  base: './', // Use relative paths for static deployment (open index.html directly)
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-  }
+  css: { postcss: { plugins: [tailwindcss()] } },
+  base: './', // Relative paths so dist/index.html also works when opened directly
 })

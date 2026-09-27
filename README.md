@@ -85,27 +85,9 @@ Your app will be available at: `https://yourusername.github.io/RubyingChinesePro
 
 ```
 src/
-├── components/          # React components
-│   ├── PinyinConverter.tsx   # Main conversion UI
-│   ├── RubyDisplay.tsx       # Ruby annotation renderer
-│   ├── HistoryPanel.tsx      # History sidebar
-│   └── ModeToggle.tsx        # Pinyin/Zhuyin toggle
-├── services/            # Business logic
-│   ├── pinyinService.ts      # Pinyin/Zhuyin conversion
-│   └── historyService.ts     # localStorage operations
-├── hooks/               # Custom React hooks
-│   ├── usePinyinConversion.ts  # Conversion state
-│   ├── useHistory.ts           # History management
-│   └── useKeyboardNavigation.ts # Keyboard shortcuts
-├── types/               # TypeScript definitions
-│   └── index.ts              # RubyToken, ConversionItem, etc.
-├── utils/               # Utility functions
-│   └── dateFormatter.ts      # Time formatting
-├── data/                # Static data
-│   └── zhuyinMap.ts          # 400+ Pinyin-to-Zhuyin mappings
-├── App.tsx              # Root component
-├── App.css              # Ruby-specific styles
-└── index.css            # Tailwind directives
+├── main.tsx     # Entry point + all UI (App, keyboard navigation, pronunciation picker)
+├── pinyin.ts    # Conversion logic, Pinyin→Zhuyin dictionary, history storage, time formatting
+└── index.css    # Ruby / picker styles
 ```
 
 ## 🎯 Key Behaviors (Identical to C# Version)
@@ -127,7 +109,7 @@ src/
 
 ### History Management
 - Max 20 items, newest first
-- Skips duplicates (compares with most recent only)
+- Skips duplicates (SHA-256 of the text, compared against all items)
 - Auto-increments IDs
 - Persists to localStorage as JSON
 

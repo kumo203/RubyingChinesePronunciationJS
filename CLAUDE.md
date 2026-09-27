@@ -24,81 +24,26 @@ npm run deploy       # Build and deploy to GitHub Pages
 
 ## Architecture
 
-### State Management Pattern
+The whole app is three source files, with no external state management:
 
-The application uses a **custom hooks-based architecture** without external state management libraries:
-
-1. **usePinyinConversion** (`src/hooks/usePinyinConversion.ts`) - Core conversion state
-   - Manages input text, ruby tokens, display mode (pinyin/zhuyin), and character selection
-   - The `convert()` function calls `getPinyin()` service and updates state
-   - Returns all state and setters for components to consume
-
-2. **useHistory** (`src/hooks/useHistory.ts`) - History management
-   - Wraps `historyService.ts` with React state
-   - Handles add/remove/clear operations
-   - Automatically syncs with localStorage
-
-3. **useKeyboardNavigation** (`src/hooks/useKeyboardNavigation.ts`) - Keyboard interaction
-   - Listens for arrow keys, <, >, comma, period
-   - Navigates only through Chinese characters (skips punctuation)
-   - Implements phrase jumping based on punctuation marks
-
-### Component Hierarchy
-
-```
-App.tsx (root)
-├── PinyinConverter.tsx (main UI)
-│   ├── ModeToggle.tsx (pinyin/zhuyin switcher)
-│   └── RubyDisplay.tsx (renders <ruby> tags)
-└── HistoryPanel.tsx (localStorage-backed history)
-```
+- **`src/pinyin.ts`** — pure logic and data
+  - Types: `RubyToken`, `PinyinVariant`, `ConversionItem`, `RubyMode`, `ToneDisplay`
+  - `ZHUYIN` dictionary (412 toneless pinyin → zhuyin pairs, stored as a compact `pinyin:zhuyin` string)
+  - `getPinyin(text)` — one token per Chinese character (Unicode `0x4e00-0x9fbb`), one token per run of other characters; all readings from `pinyin-pro` (`toneType: 'symbol'`, `multiple: true`) kept in `variants`
+  - `formatReading(variant, mode, toneDisplay)` — ruby text (nǐ / ni3 / ㄋㄧˇ / ㄋㄧ3). Tones are read via NFD normalization of the combining diacritics (macron=1, acute=2, caron=3, grave=4, none=5)
+  - History: `loadHistory`, `saveHistory`, `addToHistory` (SHA-256 dedup), plus `formatTime`
+- **`src/main.tsx`** — entry point and all UI: `App` (state, input, mode radios, result, history panel), `useKeyboardNavigation`, `RadioRow`, `PinyinPicker`, `getTokenLines`
+- **`src/index.css`** — ruby / picker / fade-in styles
 
 ### Data Flow
 
-1. User enters Chinese text in textarea (controlled by `usePinyinConversion`)
-2. Click "Convert" → calls `conversion.convert()` → triggers `getPinyin()`
-3. `getPinyin()` processes character-by-character:
-   - Chinese chars: Get pinyin via `pinyin-pro`, convert to zhuyin via dictionary lookup
-   - Non-Chinese: Group consecutive characters together
-4. Result stored as `RubyToken[]` array
-5. `RubyDisplay` renders tokens with mode-specific annotations
-6. History service saves successful conversions to localStorage
-
-### Core Conversion Logic
-
-**Character Processing** (`src/services/pinyinService.ts:73-115`):
-- Iterates through input string character-by-character
-- Uses `isChineseCharacter()` to detect Unicode range `0x4e00-0x9fbb`
-- Chinese characters become individual tokens with pinyin/zhuyin
-- Non-Chinese characters are grouped into single tokens
-
-**Pinyin-to-Zhuyin Conversion** (`src/services/pinyinService.ts:38-51`):
-1. Remove tone marks from pinyin (á → a, ǐ → i, etc.)
-2. Lookup base pinyin in `PINYIN_TO_ZHUYIN_MAP` (400+ mappings)
-3. Return zhuyin characters (e.g., "ni" → "ㄋㄧ")
-
-**Mode Switching**:
-- Conversion happens once and stores both pinyin AND zhuyin
-- Toggling mode only changes which annotation is displayed
-- No re-conversion needed when switching modes
+1. User enters text; "Convert" calls `getPinyin()` and stores `RubyToken[]` (both pinyin and zhuyin), then `addToHistory()`
+2. Mode / tone / show-hide toggles only change how tokens are rendered — no re-conversion
+3. Clicking a polyphonic character (dotted underline) opens `PinyinPicker` to choose another reading
 
 ### localStorage Schema
 
-**History** (`history` key):
-```typescript
-ConversionItem[] = [
-  {
-    id: number,           // Auto-incremented
-    inputText: string,    // Original Chinese text
-    timestamp: Date       // ISO 8601 string
-  }
-]
-```
-
-**Constraints**:
-- Maximum 20 items (newest first)
-- Duplicates skipped if identical to most recent item
-- Managed by `src/services/historyService.ts`
+Key `pinyinRubyHistory`: `ConversionItem[]` = `{ id, inputText, timestamp (ISO string), hash (SHA-256 hex) }`, newest first, max 20; a conversion whose hash already exists is not added and its id is shown as "Already in history as #id".
 
 ## Important Behaviors
 
@@ -120,19 +65,16 @@ Line breaks in input (`\n`) create separate output boxes in `RubyDisplay.tsx`. E
 ## Configuration Points
 
 ### Default Input Text
-Edit `src/hooks/usePinyinConversion.ts:9`:
-```typescript
-export function usePinyinConversion(defaultText: string = '你好，世界！') {
-```
+Initial `inputText` state in `App` (`src/main.tsx`).
 
 ### History Limit
-Edit `src/services/historyService.ts`:
+Edit `src/pinyin.ts`:
 ```typescript
 const MAX_HISTORY_ITEMS = 20; // Change as needed
 ```
 
 ### History Text Display Length
-Edit `src/components/HistoryPanel.tsx`:
+Edit `src/main.tsx`:
 ```typescript
 const HISTORY_TEXT_LENGTH = 20; // Max chars before truncation with '...'
 ```
@@ -146,7 +88,7 @@ base: '/RubyingChinesePronunciationJS/', // For GitHub Pages deployment
 ```
 
 ### Zhuyin Dictionary
-The complete Pinyin-to-Zhuyin mapping is in `src/data/zhuyinMap.ts` (copied from original C# version). Add new mappings there if needed.
+The Pinyin-to-Zhuyin mapping is the `ZHUYIN` string in `src/pinyin.ts` (copied from original C# version). Add `pinyin:zhuyin` pairs there if needed.
 
 ## Key Technical Details
 
@@ -158,19 +100,13 @@ The complete Pinyin-to-Zhuyin mapping is in `src/data/zhuyinMap.ts` (copied from
 
 ### Styling Architecture
 - Tailwind CSS for utility classes
-- Custom CSS in `App.css` for ruby-specific styling:
+- Tailwind v4 via PostCSS (configured inline in `vite.config.ts`). `src/index.css` uses the v3-style `@tailwind utilities;` directive, which under v4 emits only theme-independent utilities (no colors/spacing/font sizes) — this matches the original build's appearance
+- Custom CSS in `index.css` for ruby-specific styling:
   - Ruby base font size: 1.5rem, line-height: 2.5
   - Selection: red text + `#ffe6e6` background
   - Hover: `#f0f0f0` background
   - Ruby text size: 60% of base
 - Fade-in animation via `.fade-in` class (0.5s)
-
-### TypeScript Types
-All types defined in `src/types/index.ts`:
-- `RubyToken`: Represents one character/group with pinyin/zhuyin
-- `ConversionItem`: History entry
-- `LineToken`, `LineInfo`: Used by RubyDisplay for multi-line rendering
-- `RubyMode`: 'pinyin' | 'zhuyin'
 
 ## Testing Strategy
 
@@ -227,13 +163,12 @@ The app has PWA (Progressive Web App) support for the GitHub Pages deployment:
 - `public/manifest.json` — web app manifest (name, icons, display mode)
 - `public/sw.js` — cache-first service worker (enables offline use after first visit)
 - `public/icon-192.png` / `public/icon-512.png` — app icons
-- `public/icon.svg` — SVG source for icons (regenerate PNGs via `node scripts/generate-icons.js`)
+- `public/icon.svg` — SVG source for icons (also used as the favicon)
 - PWA install prompt appears on GitHub Pages (HTTPS) only — **not** when opening via `file://`
 
 ### Build Output Details
 Production build generates:
 - **Single HTML file**: `dist/index.html` (~500KB, includes all JS/CSS inlined)
 - PWA files: `dist/manifest.json`, `dist/sw.js`, `dist/icon-192.png`, `dist/icon-512.png`, `dist/icon.svg`
-- Favicon: `dist/vite.svg`
 - ~208KB gzipped
 - Uses `vite-plugin-singlefile` to inline all JS/CSS assets
