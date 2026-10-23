@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CountDownTimer.MainWindow"
+        Title="CountDownTimer"
+        Width="203" Height="131.5"
+        MinWidth="60" MinHeight="40"
+        Icon="avares://CountDownTimer/Assets/icon.png">
+  <!-- Viewbox replaces the original ScaleTransform: the text grows with the window (and when maximized). -->
+  <Viewbox Stretch="Fill">
+    <TextBlock x:Name="DisplayLabel"
+               Text="Click"
+               FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace"
+               FontWeight="Bold"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center" />
+  </Viewbox>
+</Window>
