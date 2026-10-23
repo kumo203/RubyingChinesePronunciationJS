@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.VisualTree;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -28,9 +30,15 @@ public partial class MainWindow : Window
         };
     }
 
+    // Checked: the window stays above all other windows.
+    private void TopmostCheckBox_Changed(object? sender, RoutedEventArgs e) =>
+        Topmost = TopmostCheckBox.IsChecked == true;
+
     // Double-click (or double-tap) starts / restarts the countdown.
     private void OnDoubleTapped(object? sender, TappedEventArgs e)
     {
+        if (e.Source is Avalonia.Visual v && v.FindAncestorOfType<CheckBox>(true) is not null) return;
+
         var remaining = _timeLimit - DateTime.Now;
         _timer.Stop();
 
@@ -45,6 +53,8 @@ public partial class MainWindow : Window
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
+        if (e.Source is Avalonia.Visual v && v.FindAncestorOfType<CheckBox>(true) is not null) return;
+
         var remaining = _timeLimit - DateTime.Now;
         _timer.Stop();
 

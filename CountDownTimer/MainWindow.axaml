@@ -5,13 +5,20 @@
         Width="203" Height="131.5"
         MinWidth="60" MinHeight="40"
         Icon="avares://CountDownTimer/Assets/icon.png">
-  <!-- Viewbox replaces the original ScaleTransform: the text grows with the window (and when maximized). -->
-  <Viewbox Stretch="Fill">
-    <TextBlock x:Name="DisplayLabel"
-               Text="Click"
-               FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace"
-               FontWeight="Bold"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center" />
-  </Viewbox>
+  <Grid RowDefinitions="Auto,*">
+    <CheckBox x:Name="TopmostCheckBox"
+              Grid.Row="0"
+              Content="Always on top"
+              Margin="6,2,0,0"
+              IsCheckedChanged="TopmostCheckBox_Changed" />
+    <!-- Viewbox replaces the original ScaleTransform: the text grows with the window (and when maximized). -->
+    <Viewbox Grid.Row="1" Stretch="Fill">
+      <TextBlock x:Name="DisplayLabel"
+                 Text="Click"
+                 FontFamily="Consolas, Menlo, Monaco, 'DejaVu Sans Mono', monospace"
+                 FontWeight="Bold"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center" />
+    </Viewbox>
+  </Grid>
 </Window>
