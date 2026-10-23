@@ -53,8 +53,6 @@ public partial class MainWindow : Window
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
-        if (e.Source is Avalonia.Visual v && v.FindAncestorOfType<CheckBox>(true) is not null) return;
-
         var remaining = _timeLimit - DateTime.Now;
         _timer.Stop();
 
